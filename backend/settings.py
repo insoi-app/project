@@ -12,9 +12,18 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import paypalrestsdk
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+import os
+
+# The URL that handles the media served from MEDIA_ROOT
+MEDIA_URL = '/media/'
+
+# The absolute path to the directory where media files are stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +35,16 @@ SECRET_KEY = 'django-insecure-hg6wep_0o#-vhlvy*#qvwn(d*#87&8d*q6xuxmdw*!t+c1h*q@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+PAYPAL_CLIENT_ID = 'AU6IjqUBOmH8NJv1pKotyuFzxvHVZKCvOgBnzYxCa45oaVq2KN2gFbVMdcP7qMv1Q0bIvcgXDeTHXMgJ'
+PAYPAL_CLIENT_SECRET = 'EFeoa3835HQHU763No_SwhA3j1eGVocu5KzRqjf6OeykCYtQlZv_jJSZm-eZPiAEFXDNyqRZgUtQOWKL'
+PAYPAL_MODE = 'sandbox' 
+paypalrestsdk.configure({
+    "mode": "sandbox",  # Or "live" for production
+    "client_id": PAYPAL_CLIENT_ID,
+    "client_secret": PAYPAL_CLIENT_SECRET
+})
 
 
 # Application definition
@@ -41,7 +59,12 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
-    "corsheaders",
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken', 
+    'corsheaders',  
+    'cabin',
+    'django_filters',
+    'reservations'
 ]
 
 MIDDLEWARE = [
@@ -127,16 +150,20 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
+# settings.py
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
-    ),
-     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',  # Or another permission class
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use a list here
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Or another permission class, depending on your needs
     ],
 }
+
 
 
 SIMPLE_JWT = {
